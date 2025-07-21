@@ -96,6 +96,7 @@ struct EndpointDetails: View {
             ScrollView {
                 VStack {
                     Text(prettyPrintedJSONString(from: response.data) ?? "No JSON data")
+                        .textSelection(.enabled)
                 }
                 .padding()
             }
@@ -129,7 +130,7 @@ struct EndpointDetails: View {
                 } message: { error in
                     Text(error.localizedDescription)
                 }
-        .navigationTitle(endpoint.path)
+        .navigationTitle("\(endpoint.httpMethod.rawValue) \(endpoint.path)")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("delete", systemImage: "trash", role: .destructive) {

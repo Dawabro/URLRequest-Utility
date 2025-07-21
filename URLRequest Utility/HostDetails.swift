@@ -54,9 +54,9 @@ struct HostDetails: View {
         .padding(.top)
         .padding(.horizontal)
         .sheet(isPresented: $showAddEndpointSheet) {
-            AddNewAddressSheet(title: "New Endpoint Address", addAddressAction: model.addEndpoint)
+            AddNewEndpointSheet(title: "New Endpoint Address", addEndpointAction: model.addEndpoint)
                 .padding(.horizontal)
-                .presentationDetents([.fraction(0.25)])
+                .presentationDetents([.height(330)])
         }
         .sheet(isPresented: $showAddHeaderSheet) {
             AddHeaderSheet(addHeaderAction: model.addHeader)

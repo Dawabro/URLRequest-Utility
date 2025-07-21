@@ -30,7 +30,7 @@ struct ContentView: View {
             }
             .scrollBounceBehavior(.basedOnSize)
             .sheet(isPresented: $showNewHostSheet) {
-                AddNewAddressSheet(title: "New Host Address", addAddressAction: model.addNewHost)
+                AddNewHostSheet(title: "New Host Address", addAddressAction: model.addNewHost)
                     .padding(.horizontal)
                     .presentationDetents([.fraction(0.25)])
             }
@@ -85,8 +85,8 @@ struct MockData {
                                                     endpoints: jokeEndpoints)
     
     static var jokeEndpoints: [EndpointModel] = [
-        EndpointModel(path: "/"),
-        EndpointModel(path: "/search", queryItems: [QueryItemModel(name: "term", value: "teacher")])
+        EndpointModel(path: "/", label: "Random Joke"),
+        EndpointModel(path: "/search", label: "Search for Joke", queryItems: [QueryItemModel(name: "term", value: "teacher")])
     ]
 }
 

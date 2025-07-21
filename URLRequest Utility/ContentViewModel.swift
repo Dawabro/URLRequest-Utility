@@ -27,10 +27,10 @@ final class ContentViewModel {
         hosts = await storageManager.load(from: .storedHosts) ?? MockData.hosts
     }
     
-    func addNewHost(address: String) {
+    func addNewHost(address: String, label: String?) {
         guard !hosts.contains(where: { $0.address == address }) else { return }
         
-        let newHost = HostModel(address: address)
+        let newHost = HostModel(address: address, label: label)
         hosts.append(newHost)
     }
     
@@ -56,9 +56,9 @@ final class ContentViewModel {
         selectedHost.defaultHeaders.remove(at: index)
     }
     
-    func addEndpoint(_ newEndpoint: String) {
-        guard let selectedHost, selectedHost.endpoints.allSatisfy({ $0.path != newEndpoint }) else { return }
-        selectedHost.endpoints.append(EndpointModel(path: newEndpoint))
+    func addEndpoint(httpMethod: HTTPMethod, endpointPath: String, label: String?) {
+        guard let selectedHost, selectedHost.endpoints.allSatisfy({ $0.path != endpointPath }) else { return }
+        selectedHost.endpoints.append(EndpointModel(path: endpointPath, label: label, httpMethod: httpMethod))
     }
     
     func deleteEndpoint(_ endpoint: EndpointModel) {
