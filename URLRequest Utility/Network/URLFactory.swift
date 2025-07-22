@@ -1,6 +1,6 @@
 //
 //  URLFactory.swift
-//  SpaceTraderiOS-SwifUI2
+//  URLRequest Utility
 //
 //  Created by David W. Brown on 1/1/22.
 //
@@ -35,9 +35,6 @@ struct URLFactory {
         for header in defaultHeaders {
             request.addValue(header.value, forHTTPHeaderField: header.key)
         }
-        
-//        request.addValue("application/json", forHTTPHeaderField: HTTPHeaders.accept.rawValue)
-//        request.addValue("application/json", forHTTPHeaderField: HTTPHeaders.contentType.rawValue)
         
         return request
     }

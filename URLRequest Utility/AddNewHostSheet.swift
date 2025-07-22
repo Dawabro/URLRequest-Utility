@@ -12,7 +12,6 @@ struct AddNewHostSheet: View {
     let addAddressAction: (String, String?) -> Void
     @State private var newAddress: String = ""
     @State private var label: String = ""
-    @State private var httpMethod: HTTPMethod = .get
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -23,6 +22,9 @@ struct AddNewHostSheet: View {
                         .font(.callout)
                     
                     TextField(title, text: $newAddress)
+                        .keyboardType(.URL)
+                        .autocorrectionDisabled(true)
+                        .textInputAutocapitalization(.never)
                         .padding(10)
                         .background {
                             RoundedRectangle(cornerRadius: 4)
@@ -35,20 +37,13 @@ struct AddNewHostSheet: View {
                         .font(.callout)
                     
                     TextField("Label (Optional)", text: $label)
+                        .keyboardType(.alphabet)
+                        .autocorrectionDisabled(true)
                         .padding(10)
                         .background {
                             RoundedRectangle(cornerRadius: 4)
                                 .foregroundStyle(Color.gray.opacity(0.1))
                         }
-                }
-            }
-            .keyboardType(.URL)
-            .autocorrectionDisabled(true)
-            .textInputAutocapitalization(.never)
-            
-            Picker("HTTP Method", selection: $httpMethod) {
-                ForEach(HTTPMethod.allCases, id: \.self) { method in
-                    Text(method.rawValue)
                 }
             }
             

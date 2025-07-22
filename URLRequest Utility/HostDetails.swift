@@ -56,17 +56,17 @@ struct HostDetails: View {
         .sheet(isPresented: $showAddEndpointSheet) {
             AddNewEndpointSheet(title: "New Endpoint Address", addEndpointAction: model.addEndpoint)
                 .padding(.horizontal)
-                .presentationDetents([.height(330)])
+                .presentationDetents([.height(300)])
         }
         .sheet(isPresented: $showAddHeaderSheet) {
             AddHeaderSheet(addHeaderAction: model.addHeader)
                 .padding(.horizontal)
-                .presentationDetents([.height(330)])
+                .presentationDetents([.height(260)])
         }
         .sheet(item: $selectedHeader, content: { header in
             UpdateHeaderSheet(currentHeader: header, updateHeaderAction: model.updateHeader(_:to:), deleteHeaderAction: model.deleteHeader(_:))
                 .padding(.horizontal)
-                .presentationDetents([.height(330)])
+                .presentationDetents([.height(320)])
         })
         .alert("Delete Host: \(host.address)", isPresented: $showDeleteHostAlert) {
             Button(role: .destructive) {
@@ -156,7 +156,7 @@ fileprivate struct AddHeaderSheet: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        VStack {
+        VStack(spacing: 30) {
             VStack(spacing: 20) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Key")
@@ -169,7 +169,6 @@ fileprivate struct AddHeaderSheet: View {
                                 .foregroundStyle(Color.gray.opacity(0.1))
                         }
                 }
-                
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Value")
@@ -188,9 +187,7 @@ fileprivate struct AddHeaderSheet: View {
             .autocorrectionDisabled(true)
             .textInputAutocapitalization(.never)
             
-            Spacer()
-            
-            HStack {
+            HStack(spacing: 30) {
                 Button("Cancel", role: .cancel) {
                     dismiss()
                 }
@@ -204,7 +201,6 @@ fileprivate struct AddHeaderSheet: View {
                 .disabled(key.isEmpty || value.isEmpty)
             }
         }
-        .padding(.top)
     }
 }
 
@@ -218,7 +214,7 @@ fileprivate struct UpdateHeaderSheet: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        VStack {
+        VStack(spacing: 30) {
             HStack {
                 Button(role: .none) {
                     disabled.toggle()
@@ -238,8 +234,6 @@ fileprivate struct UpdateHeaderSheet: View {
                 }
             }
             
-            Spacer()
-            
             VStack(spacing: 20) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Key")
@@ -254,7 +248,6 @@ fileprivate struct UpdateHeaderSheet: View {
                         .opacity(disabled ? 0.4 : 1)
                         .disabled(disabled)
                 }
-                
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Value")
@@ -275,9 +268,7 @@ fileprivate struct UpdateHeaderSheet: View {
             .autocorrectionDisabled(true)
             .textInputAutocapitalization(.never)
             
-            Spacer()
-            
-            HStack {
+            HStack(spacing: 30) {
                 Button("Cancel", role: .cancel) {
                     dismiss()
                 }
@@ -290,9 +281,7 @@ fileprivate struct UpdateHeaderSheet: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(key.isEmpty || value.isEmpty)
             }
-            .padding(.bottom)
         }
-        .padding(.top)
         .onAppear {
             key = currentHeader.key
             value = currentHeader.value

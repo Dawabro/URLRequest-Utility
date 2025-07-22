@@ -85,7 +85,7 @@ struct EndpointDetails: View {
         .sheet(isPresented: $showAddQuerySheet) {
             AddQuerySheet(addQueryAction: model.addQueryItem)
                 .padding(.horizontal)
-                .presentationDetents([.height(330)])
+                .presentationDetents([.height(250)])
         }
         .sheet(item: $selectedQuery, content: { query in
             UpdateQuerySheet(currentQuery: query, updateQueryAction: model.updateQueryItem, deleteQueryAction: model.deleteQueryItem)
@@ -93,13 +93,7 @@ struct EndpointDetails: View {
                 .presentationDetents([.height(330)])
         })
         .sheet(item: $selectedResponse, content: { response in
-            ScrollView {
-                VStack {
-                    Text(prettyPrintedJSONString(from: response.data) ?? "No JSON data")
-                        .textSelection(.enabled)
-                }
-                .padding()
-            }
+            ResponseSheet(response: response)
         })
         .alert("Clear Responses", isPresented: $showClearResponsesAlert) {
             Button(role: .destructive) {
@@ -147,17 +141,6 @@ struct EndpointDetails: View {
         case 300..<400: return .gray
         case 400..<500: return .orange
         default: return .red
-        }
-    }
-    
-    func prettyPrintedJSONString(from data: Data) -> String? {
-        do {
-            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed])
-            let prettyData = try JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted])
-            return String(data: prettyData, encoding: .utf8)
-        } catch {
-            print("Failed to pretty-print JSON:", error)
-            return String(data: data, encoding: .utf8)
         }
     }
 }
@@ -220,23 +203,13 @@ fileprivate struct QueryCell: View {
 }
 
 fileprivate struct AddQuerySheet: View {
-    let addQueryAction: (String, String) async -> Void
+    let addQueryAction: (String, String) -> Void
     @State private var name = ""
     @State private var value = ""
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        VStack {
-            Button(role: .cancel) {
-                dismiss()
-            } label: {
-                Text("Cancel")
-                    .font(.title3)
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            
-            Spacer()
-            
+        VStack(spacing: 30) {
             VStack(spacing: 20) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Name")
@@ -249,7 +222,6 @@ fileprivate struct AddQuerySheet: View {
                                 .foregroundStyle(Color.gray.opacity(0.1))
                         }
                 }
-                
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Value")
@@ -268,18 +240,20 @@ fileprivate struct AddQuerySheet: View {
             .autocorrectionDisabled(true)
             .textInputAutocapitalization(.never)
             
-            Spacer()
-            
-            Button("Add Query") {
-                Task {
-                    await addQueryAction(name, value)
+            HStack(spacing: 20) {
+                Button("Cancel", role: .cancel) {
                     dismiss()
                 }
+                .buttonStyle(.bordered)
+                
+                Button("Add Query") {
+                    addQueryAction(name, value)
+                    dismiss()
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(name.isEmpty || value.isEmpty)
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(name.isEmpty || value.isEmpty)
         }
-        .padding(.top)
     }
 }
 
@@ -293,7 +267,7 @@ fileprivate struct UpdateQuerySheet: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        VStack {
+        VStack(spacing: 30) {
             HStack {
                 Button(role: .none) {
                     disabled.toggle()
@@ -313,8 +287,6 @@ fileprivate struct UpdateQuerySheet: View {
                 }
             }
             
-            Spacer()
-            
             VStack(spacing: 20) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Name")
@@ -329,7 +301,6 @@ fileprivate struct UpdateQuerySheet: View {
                         .opacity(disabled ? 0.4 : 1)
                         .disabled(disabled)
                 }
-                
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Value")
@@ -350,9 +321,7 @@ fileprivate struct UpdateQuerySheet: View {
             .autocorrectionDisabled(true)
             .textInputAutocapitalization(.never)
             
-            Spacer()
-            
-            HStack {
+            HStack(spacing: 30) {
                 Button("Cancel", role: .cancel) {
                     dismiss()
                 }
@@ -366,12 +335,53 @@ fileprivate struct UpdateQuerySheet: View {
                 .disabled(name.isEmpty || value.isEmpty)
             }
         }
-        .padding(.top)
         .onAppear {
             name = currentQuery.name
             value = currentQuery.value
             disabled = currentQuery.disabled
         }
+    }
+}
+
+fileprivate struct ResponseSheet: View {
+    let response: RequestResponse
+    
+    var body: some View {
+        ScrollView {
+            VStack {
+                if let jsonString = prettyPrintedJSONString(from: response.data) {
+                    Text(jsonString)
+                        .textSelection(.enabled)
+                } else if let image = Image(data: response.data) {
+                    image
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    let rawDataString = String(data: response.data, encoding: .utf8) ?? "Unable to decode data"
+                    Text(rawDataString)
+                }
+            }
+            .padding()
+        }
+    }
+    
+    private func prettyPrintedJSONString(from data: Data) -> String? {
+        do {
+            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed])
+            let prettyData = try JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted])
+            return String(data: prettyData, encoding: .utf8)
+        } catch {
+            print("Failed to pretty-print JSON:", error)
+            return String(data: data, encoding: .utf8)
+        }
+    }
+}
+
+extension Image {
+    
+    init?(data: Data) {
+        guard let uiImage = UIImage(data: data) else { return nil }
+        self = Image(uiImage: uiImage)
     }
 }
 

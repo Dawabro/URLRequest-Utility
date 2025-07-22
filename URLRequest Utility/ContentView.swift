@@ -32,7 +32,7 @@ struct ContentView: View {
             .sheet(isPresented: $showNewHostSheet) {
                 AddNewHostSheet(title: "New Host Address", addAddressAction: model.addNewHost)
                     .padding(.horizontal)
-                    .presentationDetents([.fraction(0.25)])
+                    .presentationDetents([.height(260)])
             }
             .navigationTitle("Hosts")
             .toolbar {
